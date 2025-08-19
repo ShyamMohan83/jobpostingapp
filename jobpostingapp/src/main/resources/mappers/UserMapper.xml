@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jobposting.jobpostingapp.mapper.UserMapper">
+
+    <resultMap id="User" type="com.jobposting.jobpostingapp.model.User">
+        <id property="userId" column="user_id"/>
+        <result property="firstName" column="first_name"/>
+        <result property="lastName" column="last_name"/>
+        <result property="displayName" column="display_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <collection property="userPreference" ofType="com.jobposting.jobpostingapp.model.UserPreference">
+            <id property="preferenceId" column="preference_id" />
+            <id property="language" column="language" />
+            <id property="theme" column="theme" />
+            <id property="notificationsEnabled" column="notifications_enabled" />
+        </collection>
+        <collection property="phones" ofType="com.jobposting.jobpostingapp.model.Phone">
+            <id property="phoneNumber" column="phone_number"/>
+            <id property="type" column="type"/>
+            <id property="isPrimary" column="is_primary" />
+            <id property="isVerified" column="is_verified" />
+        </collection>
+        <collection property="emails" ofType="com.jobposting.jobpostingapp.model.Email">
+            <id property="emailAddress" column="email_address" />
+            <id property ="type" column="type"/>
+            <id property="isVerified" column="is_verified" />
+        </collection>
+        <collection property="address" ofType="com.jobposting.jobpostingapp.model.Address">
+            <id property="addressId" column="address_id"/>
+            <result property="country" column="country"/>
+            <result property="city" column="city"/>
+            <result property="region" column="region"/>
+            <result property="house" column="house" />
+            <result property="streetOne" column="street_one" />
+            <result property="streetTwo" column="street_two" />
+            <result property="zip" column="zip" />
+            <result property="type" column="type" />
+            <result property="isPrimary" column="is_primary" />
+            <result property="status" column="status"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAllUsers" resultMap="User">
+        SELECT
+        u.user_id,
+        u.first_name,
+        u.last_name,
+        a.address_id,
+        a.country,
+        a.city,
+        a.region,
+        a.house,
+        a.street_one,
+        a.street_two,
+        a.zip,
+        a.type,
+        a.is_primary,
+        a.status,
+        pe.email_address,
+        pe.is_primary,
+        pe.type,
+        pp.phone_number,
+        pp.type,
+        pp.is_primary,
+        pp.is_verified,
+        up.preference_id,
+        up.language,
+        up.theme,
+        up.notifications_enabled,
+        u.created_at,
+        u.updated_at,
+        STRING_AGG(ur.role_name, ',') AS roles
+        FROM users u
+        LEFT JOIN addresses a ON a.user_id = u.user_id
+        LEFT JOIN emails pe ON pe.user_id = u.user_id AND pe.is_primary = TRUE
+        LEFT JOIN phones pp ON pp.user_id = u.user_id AND pp.is_primary = TRUE
+        LEFT JOIN user_preferences up ON up.user_id = u.user_id
+        LEFT JOIN user_roles ur ON ur.user_id = u.user_id
+        GROUP BY
+        u.user_id, u.first_name, u.last_name,
+        a.address_id, a.country, a.city, a.region, a.house,
+        a.street_one, a.street_two, a.zip, a.type, a.is_primary, a.status,
+        pe.email_address, pe.is_primary, pe.type,
+        pp.phone_number,pp.type, pp.is_primary, pp.is_verified,
+        up.preference_id,
+        up.language,
+        up.theme,
+        up.notifications_enabled,
+        u.created_at, u.updated_at
+        ORDER BY u.created_at DESC;
+    </select>
+
+    <insert id="insertUser" parameterType="com.jobposting.jobpostingapp.model.User" useGeneratedKeys="true"
+            keyProperty="userId" keyColumn="user_id">
+        INSERT INTO users(
+        first_name,
+        middle_name,
+        last_name,
+        date_of_birth,
+        gender,
+        marital_status,
+        status
+        ) VALUES (
+        #{firstName},
+        #{middleName},
+        #{lastName},
+        #{dateOfBirth},
+        #{gender},
+        #{maritalStatus},
+        #{status}
+        )
+    </insert>
+
+</mapper>

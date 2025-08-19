@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jobposting.jobpostingapp.mapper.UserPreferenceMapper">
+    <insert id="insertUserPreference" keyColumn="preference_id" keyProperty="preferenceId" useGeneratedKeys="true"
+      parameterType="com.jobposting.jobpostingapp.model.UserPreference">
+        INSERT INTO user_preferences(
+            user_id,
+            language,
+            theme,
+            notifications_enabled
+        ) VALUES(
+            #{userId},
+            #{language},
+            #{theme},
+            #{notificationsEnabled}
+        )
+    </insert>
+</mapper>

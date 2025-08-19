@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jobposting.jobpostingapp.mapper.EmailMapper">
+
+    <insert id="insertEmails" keyColumn="email_id" keyProperty="emailId" parameterType="com.jobposting.jobpostingapp.model.Email"
+            useGeneratedKeys="true" >
+        INSERT INTO emails(
+        user_id,
+        email_address,
+        type,
+        is_primary,
+        is_verified
+        ) VALUES(
+        #{userId},
+        #{emailAddress},
+        #{type},
+        #{isPrimary},
+        #{isVerified}
+        )
+    </insert>
+
+</mapper>
