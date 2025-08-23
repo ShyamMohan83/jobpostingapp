@@ -20,9 +20,8 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public boolean createUser(@RequestBody User user) {
-        System.out.println(user.getFirstName());
         userService.createUser(user);
         return true;
     }

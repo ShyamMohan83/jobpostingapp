@@ -22,12 +22,22 @@ public class User {
     private String gender;
     private String maritalStatus;
 
+    private UserAuthEntity authEntity;
+
     private  List<UserPreference> userPreference;
 
 
 
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+
+    public UserAuthEntity getAuthEntity() {
+        return authEntity;
+    }
+
+    public void setAuthEntity(UserAuthEntity authEntity) {
+        this.authEntity = authEntity;
+    }
 
     public List<UserPreference> getUserPreference() {
         return userPreference;

@@ -1,5 +1,6 @@
 package com.jobposting.jobpostingapp.controller;
 
+import com.jobposting.jobpostingapp.model.AuthResponse;
 import com.jobposting.jobpostingapp.model.UserLoginRequest;
 import com.jobposting.jobpostingapp.service.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +16,8 @@ public class AuthController {
         this.authService = authService;
     }
     @PostMapping("/login")
-    public String login(@RequestBody UserLoginRequest userLoginRequest) {
-     if(authService.verifyUser(userLoginRequest.getUserName(), userLoginRequest.getPassword())) {
-         return "Login Success";
-     }
-        return "Login failed";
+    public AuthResponse login(@RequestBody UserLoginRequest userLoginRequest) {
+         return authService.verifyUser(userLoginRequest.getUserName(), userLoginRequest.getPassword());
     }
 
 }

@@ -2,6 +2,7 @@ package com.jobposting.jobpostingapp.service;
 
 import com.jobposting.jobpostingapp.mapper.*;
 import com.jobposting.jobpostingapp.model.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,15 +17,26 @@ public class UserService {
     private final EmailMapper emailMapper;
 
     private final PhoneMapper phoneMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     private final UserPreferenceMapper userPreferenceMapper;
 
-    public UserService(UserMapper userMapper, AddressMapper addressMapper, EmailMapper emailMapper, PhoneMapper phoneMapper, UserPreferenceMapper userPreferenceMapper) {
+    private final AuthMapper authMapper;
+    private final UserRoleMapper userRoleMapper;
+
+    public UserService(UserMapper userMapper, AddressMapper addressMapper, EmailMapper emailMapper,
+                       PhoneMapper phoneMapper, UserPreferenceMapper userPreferenceMapper,
+                       AuthMapper authMapper, UserRoleMapper userRoleMapper,
+                       BCryptPasswordEncoder passwordEncoder
+    ) {
         this.userMapper = userMapper;
         this.addressMapper = addressMapper;
         this.emailMapper = emailMapper;
         this.phoneMapper = phoneMapper;
         this.userPreferenceMapper = userPreferenceMapper;
+        this.authMapper = authMapper;
+        this.userRoleMapper = userRoleMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAllUsers() {
@@ -33,11 +45,13 @@ public class UserService {
 
     @Transactional
     public User createUser(User user) {
-       this.insertUser(user);
+        this.insertUser(user);
         this.insertAddress(user);
         this.insertEmails(user);
         this.insertAllPhoneNumbers(user);
-        this.allInsertUserPreference(user);
+        this.insertAllUserPreference(user);
+        this.insertUserAuthInfo(user);
+        this.insertAllRoles(user);
         return user;
     }
 
@@ -66,10 +80,27 @@ public class UserService {
         }
     }
 
-    public void allInsertUserPreference(User user) {
+    public void insertAllUserPreference(User user) {
         for(UserPreference userPreference: user.getUserPreference()) {
             userPreference.setUserId(user.getUserId());
             userPreferenceMapper.insertUserPreference(userPreference);
+        }
+    }
+
+    public void insertUserAuthInfo(User user) {
+        UserAuthEntity userAuthEntity = user.getAuthEntity();
+        String rawPassword = userAuthEntity.getPasswordHash();
+        rawPassword = passwordEncoder.encode(rawPassword);
+        System.out.println(rawPassword);
+        userAuthEntity.setUserId(user.getUserId());
+        userAuthEntity.setPasswordHash(rawPassword);
+        authMapper.insertAuthInformation(userAuthEntity);
+    }
+
+    public void insertAllRoles(User user) {
+        for (UserRole userRole : user.getRoles()) {
+            userRole.setUserId(user.getUserId());
+            this.userRoleMapper.insertUserRoles(userRole);
         }
     }
 }
